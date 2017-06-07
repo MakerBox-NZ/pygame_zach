@@ -13,8 +13,8 @@ import os #help python identify your OS
 
 '''SETUP'''
 #code runs once
-screenX = 960 #screen width
-screenY = 720 #screen height
+screenX = 480 #screen width
+screenY = 360 #screen height
 
 fps = 40 #frame rate
 afps = 4 #animation cycles
