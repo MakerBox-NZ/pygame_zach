@@ -17,12 +17,17 @@ class Player(pygame.sprite.Sprite):
             self.images.append(img)
             self.image = self.images[0]
             self.rect = self.image.get_rect()
+            self.image.convert_alpha() #optimise for alpha
+            self.image.set_colorkey(alpha) #set alpha
             
  
 '''SETUP'''
 #code runs once
 screenX = 480 #screen width
 screenY = 360 #screen height
+alpha = (0,0,0)
+black = (1,1,1)
+white = (255, 255, 255)
 
 fps = 40 #frame rate
 afps = 4 #animation cycles
@@ -53,6 +58,7 @@ while main == True:
                 sys.exit()
                 main = False
     screen.blit(backdrop, backdropRect)
+    movingsprites.draw(screen) #draw player
     pygame.display.flip()
     clock.tick(fps)
     
