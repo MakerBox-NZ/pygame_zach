@@ -25,7 +25,7 @@ class Player(pygame.sprite.Sprite):
 #code runs once
 screenX = 480 #screen width
 screenY = 360 #screen height
-alpha = (0,0,0)
+alpha = (0,255,0)
 black = (1,1,1)
 white = (255, 255, 255)
 
