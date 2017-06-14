@@ -57,6 +57,26 @@ while main == True:
                 pygame.quit()
                 sys.exit()
                 main = False
+
+            if event.key == ord('a'):
+                print('left stop')
+            if event.key == ord('d'):
+                print('right stop')
+            if event.key == ord('w'):
+                print('up stop')
+            if event.key == ord('s'):
+                print('down stop')
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == ord('a'):
+                print('left')
+            if event.key == ord('d'):
+                print('right')
+            if event.key == ord('w'):
+                print('up')
+            if event.key == ord('s'):
+                print('down')
+                
     screen.blit(backdrop, backdropRect)
     movingsprites.draw(screen) #draw player
     pygame.display.flip()
