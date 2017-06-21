@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # by zackles007
 # thanks to Jess Weichler
+# It's no Call of Duty, but it's somthing.
 import pygame #load pygame keywords
 import sys #let python use your file system
 import os #help python identify your OS
