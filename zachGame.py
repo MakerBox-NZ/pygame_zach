@@ -71,7 +71,7 @@ movesteps = 10 #how fast to move
 while main == True:
     for event in pygame.event.get():
         if event.type == pygame.KEYUP:
-            if event.key == ord('q'):
+            if event.key == pygame.K_BACKSPACE:
                 pygame.quit()
                 sys.exit()
                 main = False
