@@ -87,7 +87,7 @@ movingsprites.add(player)
 movesteps = 10 #how fast to move
 
 #enemy code
-enemy = Enemy(100,50, 'enemy.png') #apawn enemy
+enemy = Enemy(100,270, 'enemy.png') #spawn enemy
 enemy_list = pygame.sprite.Group() #create enemy group
 enemy_list.add(enemy)  #add enemy to group
 
