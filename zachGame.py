@@ -16,6 +16,10 @@ class Player(pygame.sprite.Sprite):
             self.momentumX = 0 #move along X
             self.momentumY = 0 #move along Y
 
+            #gravity variables
+            self.collide_delta = 0
+            self.jump_delta = 6
+
             self.score = 0 #set score
             self.images = [ ]
             img = pygame.image.load(os.path.join('images','hero.png')).convert()
@@ -39,8 +43,19 @@ class Player(pygame.sprite.Sprite):
             nextY = currentY + self.momentumY
             self.rect.y = nextY
 
+            #gravity
+            if self.collide_delta < 6 and self.jump_delta < 6:
+                self.jump_delta = 6*2
+                self.momentumY -=33 #how high to jump
+
+                self.collide_delta +=6
+                self.jump_delta += 6
+
+        def jump (self, platform_list):
+             self.jump_delta = 0
+
             #colisions
-            enemy_hit_list = pygame.sprite.spritecollide(self, enemy_list, False)
+            enemy_hit_list = pygame.sprite.spritecollide(self, enemy_list, False)       
             for enemy in enemy_hit_list:
                 self.score -= 1
                 print(self.score)
@@ -51,11 +66,13 @@ class Player(pygame.sprite.Sprite):
                      self.rect.y = currentY
                      self.rect.x = currentX+9
                      self.momentumY = 0
+                     self.collide_delta = 0 #stop jumping
 
             if self.momentumY > 0:
                  for block in block_hit_list:
                      self.rect.y = currentY
                      self.momentumY = 0
+                     self.collide_delta = 0 #stop jumpig
 
         def gravity(self):
             self.momentumY += 2 #how fast player falls
@@ -186,6 +203,7 @@ while main == True:
                 print('right')
                 player.control(movesteps, 0)
             if event.key == ord('w') or event.key == pygame.K_UP:
+                player.jump(platform_list)
                 print('jump')
             if event.key == ord('s') or event.key == pygame.K_DOWN:
                 print('duck')
