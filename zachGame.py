@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
             self.momentumX += x
             self.momentumY += y
 
-        def update(self, enemy_list):
+        def update(self, enemy_list, platform_list):
             #update sprite position
             currentX = self.rect.x
             nextX = currentX + self.momentumX
@@ -44,6 +44,25 @@ class Player(pygame.sprite.Sprite):
             for enemy in enemy_hit_list:
                 self.score -= 1
                 print(self.score)
+
+            block_hit_list = pygame.sprite.spritecollide(self, platform_list, False)
+            if self.momentumX > 0:
+                 for block in block_hit_list:
+                     self.rect.y = currentY
+                     self.rect.x = currentX+9
+                     self.momentumY = 0
+
+            if self.momentumY > 0:
+                 for block in block_hit_list:
+                     self.rect.y = currentY
+                     self.momentumY = 0
+
+        def gravity(self):
+            self.momentumY += 2 #how fast player falls
+
+            if self.rect.y > 360 and self.momentumY >= 0:
+                self.momentumY = 0
+                self.rect.y = screenY-20
 
 class Platform(pygame.sprite.Sprite):
    #x location, y location, img width, img height, img file)
@@ -64,7 +83,15 @@ class Platform(pygame.sprite.Sprite):
    def level1():
        #create level 1
        platform_list = pygame.sprite.Group()
-       block = Platform(260, 270, 260, 300,os.path.join('images','crate0.png'))
+       block = Platform(260, 270, 58, 51,os.path.join('images','crate0.png'))
+       platform_list.add(block) #after each block
+       block = Platform(0, 320, 94, 49,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(94, 320, 94, 49,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(188, 320, 94, 49,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(282, 320, 70, 49,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
 
        return platform_list #at end of function level1
@@ -165,7 +192,8 @@ while main == True:
                 
     screen.blit(backdrop, backdropRect)
     platform_list.draw(screen) #draw platforms on screen
-    player.update(enemy_list) #update player position
+    player.gravity() #check gravity
+    player.update(enemy_list, platform_list) #update player position
     movingsprites.draw(screen) #draw player
 
     enemy_list.draw(screen) #refresh enemies
