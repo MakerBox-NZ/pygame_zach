@@ -78,9 +78,9 @@ class Player(pygame.sprite.Sprite):
 
 
         def gravity(self):
-            self.momentumY += 2 #how fast player falls
+            self.momentumY += 3 #how fast player falls
 
-            if self.rect.y > 360 and self.momentumY >= 0:
+            if self.rect.y > screenY and self.momentumY >= 0:
                 self.momentumY = 0
                 self.rect.y = screenY-20
 
@@ -103,16 +103,29 @@ class Platform(pygame.sprite.Sprite):
    def level1():
        #create level 1
        platform_list = pygame.sprite.Group()
-       block = Platform(260, 270, 58, 51,os.path.join('images','crate0.png'))
+       block = Platform(260, 630, 58, 51,os.path.join('images','crate0.png'))
        platform_list.add(block) #after each block
-       block = Platform(0, 320, 94, 49,os.path.join('images','ground_grass.png'))
+       block = Platform(0, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(94, 320, 94, 49,os.path.join('images','ground_grass.png'))
+       block = Platform(94, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(188, 320, 94, 49,os.path.join('images','ground_grass.png'))
+       block = Platform(188, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(282, 320, 70, 49,os.path.join('images','ground_grass.png'))
+       block = Platform(282, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
+       block = Platform(350, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(420, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(480, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(540, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(600, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(660, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       
 
        return platform_list #at end of function level1
 
@@ -141,8 +154,8 @@ class Enemy(pygame.sprite.Sprite):
             
 '''SETUP'''
 #code runs once
-screenX = 480 #screen width
-screenY = 360 #screen height
+screenX = 960 #screen width
+screenY = 720 #screen height
 alpha = (0,255,0)
 black = (1,1,1)
 white = (255, 255, 255)
@@ -162,13 +175,16 @@ platform_list = Platform.level1() #set stage to level 1
 
 player = Player() #spawn player on screen 
 player.rect.x = 0
-player.rect.y = 120
+player.rect.y = 300
 movingsprites = pygame.sprite.Group()
 movingsprites.add(player)
 movesteps = 10 #how fast to move
 
+forwardX = 600 #when to scroll
+backwardX = 150 #when to scroll
+
 #enemy code
-enemy = Enemy(100,270, 'enemy.png') #spawn enemy
+enemy = Enemy(400, 620, 'enemy.png') #spawn enemy
 enemy_list = pygame.sprite.Group() #create enemy group
 enemy_list.add(enemy)  #add enemy to group
 
@@ -210,6 +226,11 @@ while main == True:
                 print('jump')
             if event.key == ord('s') or event.key == pygame.K_DOWN:
                 print('duck')
+
+       #scroll world forward
+        if player.rect.x >= forwardX:
+            scroll = player.rect.x - forwardX
+            player.rect.x = forwardX
                 
     screen.blit(backdrop, backdropRect)
     platform_list.draw(screen) #draw platforms on screen
