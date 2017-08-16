@@ -51,10 +51,7 @@ class Player(pygame.sprite.Sprite):
                 self.collide_delta +=6
                 self.jump_delta += 6
 
-        def jump (self, platform_list):
-             self.jump_delta = 0
-
-            #colisions
+                #colisions
             enemy_hit_list = pygame.sprite.spritecollide(self, enemy_list, False)       
             for enemy in enemy_hit_list:
                 self.score -= 1
@@ -72,7 +69,13 @@ class Player(pygame.sprite.Sprite):
                  for block in block_hit_list:
                      self.rect.y = currentY
                      self.momentumY = 0
-                     self.collide_delta = 0 #stop jumpig
+                     self.collide_delta = 0 #stop jumping
+
+          
+
+        def jump (self, platform_list):
+             self.jump_delta = 0
+
 
         def gravity(self):
             self.momentumY += 2 #how fast player falls
