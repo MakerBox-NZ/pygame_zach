@@ -125,6 +125,14 @@ class Platform(pygame.sprite.Sprite):
        platform_list.add(block) #after each block
        block = Platform(660, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
+       block = Platform(720, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(780, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(840, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
+       block = Platform(900, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       platform_list.add(block) #after each block
        
 
        return platform_list #at end of function level1
@@ -231,6 +239,15 @@ while main == True:
         if player.rect.x >= forwardX:
             scroll = player.rect.x - forwardX
             player.rect.x = forwardX
+            for platform in platform_list:
+                platform.rect.x -= scroll
+
+        #scroll world backward
+        if player.rect.x <= backwardX:
+            scroll = min(1, (backwardX - player.rect.x))
+            player.rect.x = backwardX
+            for platform in platform_list:
+                platform.rect.x += scroll
                 
     screen.blit(backdrop, backdropRect)
     platform_list.draw(screen) #draw platforms on screen
