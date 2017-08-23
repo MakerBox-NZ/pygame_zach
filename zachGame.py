@@ -33,7 +33,7 @@ class Player(pygame.sprite.Sprite):
             self.momentumX += x
             self.momentumY += y
 
-        def update(self, enemy_list, platform_list):
+        def update(self, enemy_list, platform_list, crate_list):
             #update sprite position
             currentX = self.rect.x
             nextX = currentX + self.momentumX
@@ -57,6 +57,11 @@ class Player(pygame.sprite.Sprite):
                 self.score -= 1
                 print(self.score)
 
+            loot_hit_list = pygame.sprite.spritecollide(self, loot_list, False)       
+            for loot in loot_hit_list:
+                self.score += 1
+                print(self.score)
+
             block_hit_list = pygame.sprite.spritecollide(self, platform_list, False)
             if self.momentumX > 0:
                  for block in block_hit_list:
@@ -70,6 +75,9 @@ class Player(pygame.sprite.Sprite):
                      self.rect.y = currentY
                      self.momentumY = 0
                      self.collide_delta = 0 #stop jumping
+
+            
+                     
 
           
 
@@ -99,12 +107,10 @@ class Platform(pygame.sprite.Sprite):
        #paint image into blocks
        self.image.blit(self.blockpic,(0,0),(0,0,imgw,imgh))
 
-
+       
    def level1():
        #create level 1
        platform_list = pygame.sprite.Group()
-       block = Platform(260, 630, 58, 51,os.path.join('images','crate0.png'))
-       platform_list.add(block) #after each block
        block = Platform(0, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
        block = Platform(94, 680, 119, 62,os.path.join('images','ground_grass.png'))
@@ -137,6 +143,12 @@ class Platform(pygame.sprite.Sprite):
 
        return platform_list #at end of function level1
 
+    def loot1():
+       loot_list = pygame.sprite.Group()
+       loot = Platform(200, 600, 25, 25)
+       loot_list.add(loot)
+       return loot_list
+                       
 class Enemy(pygame.sprite.Sprite):
     #spawn an enemy
     def __init__(self,x,y,img): 
@@ -159,6 +171,14 @@ class Enemy(pygame.sprite.Sprite):
             print('reset')
 
         self.counter += 1
+
+def crate_list():
+       #solid crate list
+       crate_list = pygame.sprite.Group()
+       crate = Platform(260, 630, 58, 51,os.path.join('images','crate0.png'))
+       crate_list.add(crate) #after each block
+
+       return crate_list
             
 '''SETUP'''
 #code runs once
@@ -180,6 +200,8 @@ backdrop = pygame.image.load(os.path.join('images','stage.png')).convert()
 backdropRect = screen.get_rect()
 
 platform_list = Platform.level1() #set stage to level 1
+#crate_list = crate_list()
+loot_list = loot_list()
 
 player = Player() #spawn player on screen 
 player.rect.x = 0
@@ -188,13 +210,18 @@ movingsprites = pygame.sprite.Group()
 movingsprites.add(player)
 movesteps = 10 #how fast to move
 
-forwardX = 600 #when to scroll
-backwardX = 150 #when to scroll
+forwardX = 400 #when to scroll
+backwardX = 250 #when to scroll
 
 #enemy code
 enemy = Enemy(400, 620, 'enemy.png') #spawn enemy
 enemy_list = pygame.sprite.Group() #create enemy group
 enemy_list.add(enemy)  #add enemy to group
+
+#loot code
+loot = Loot(200, 600, 'loot.png') #spawn loot
+loot_list = pygame.sprite.Group() #create loot group
+loot_list.add(loot) #add loot to group
 
 '''MAIN LOOP''' 
 #code runs many times 
@@ -235,24 +262,25 @@ while main == True:
             if event.key == ord('s') or event.key == pygame.K_DOWN:
                 print('duck')
 
-       #scroll world forward
-        if player.rect.x >= forwardX:
-            scroll = player.rect.x - forwardX
-            player.rect.x = forwardX
-            for platform in platform_list:
-                platform.rect.x -= scroll
+    #scroll world forward
+    if player.rect.x >= forwardX:
+        scroll = player.rect.x - forwardX
+        player.rect.x = forwardX
+        for platform in platform_list:
+            platform.rect.x -= scroll
 
-        #scroll world backward
-        if player.rect.x <= backwardX:
-            scroll = min(1, (backwardX - player.rect.x))
-            player.rect.x = backwardX
-            for platform in platform_list:
-                platform.rect.x += scroll
+    #scroll world backward
+    if player.rect.x <= backwardX:
+        scroll = backwardX - player.rect.x
+        player.rect.x = backwardX
+        for platform in platform_list:
+            platform.rect.x += scroll
                 
     screen.blit(backdrop, backdropRect)
     platform_list.draw(screen) #draw platforms on screen
+    #crate_list.draw(screen) #draw crates on screen
     player.gravity() #check gravity
-    player.update(enemy_list, platform_list) #update player position
+    player.update(enemy_list, platform_list, crate_list) #update player position
     movingsprites.draw(screen) #draw player
 
     enemy_list.draw(screen) #refresh enemies
