@@ -5,9 +5,15 @@
 import pygame #load pygame keywords
 import sys #let python use your file system
 import os #help python identify your OS
+import pygame.freetype #load fonts
 
 '''OBJECTS'''
-#put classes & functions here 
+#put classes & functions here
+
+def stats(score):
+    #display text,1,color(rgb)
+    text_score = myfont.render("Score: "+str(score), 1, (250,147,248))
+    screen.blit(text_score, (4, 4))
 
 class Player(pygame.sprite.Sprite):
         #spawn a player
@@ -21,6 +27,7 @@ class Player(pygame.sprite.Sprite):
             self.jump_delta = 6
 
             self.score = 0 #set score
+            self.damage = 0 #player is hit
             self.images = [ ]
             img = pygame.image.load(os.path.join('images','hero.png')).convert()
             self.images.append(img)
@@ -33,7 +40,7 @@ class Player(pygame.sprite.Sprite):
             self.momentumX += x
             self.momentumY += y
 
-        def update(self, enemy_list, platform_list, crate_list):
+        def update(self, enemy_list, platform_list, crate_list, loot_list):
             #update sprite position
             currentX = self.rect.x
             nextX = currentX + self.momentumX
@@ -46,21 +53,33 @@ class Player(pygame.sprite.Sprite):
             #gravity
             if self.collide_delta < 6 and self.jump_delta < 6:
                 self.jump_delta = 6*2
-                self.momentumY -=33 #how high to jump
+                self.momentumY -=29 #how high to jump
 
                 self.collide_delta +=6
                 self.jump_delta += 6
 
                 #colisions
             enemy_hit_list = pygame.sprite.spritecollide(self, enemy_list, False)       
-            for enemy in enemy_hit_list:
+            '''for enemy in enemy_hit_list:
                 self.score -= 1
-                print(self.score)
+                print(self.score)'''
+
+            if self.damage == 0:
+                 for enemy in enemy_hit_list:
+                     if not self.rect.contains(enemy):
+                         self.damage = self.rect.colliderect(enemy)
+                         print(self.score)
+
+            if self.damage == 1:
+                idx = self.rect.collidelist(enemy_hit_list)
+                if idx == -1:
+                    self.damage = 0 #set damage back to 0
+                    self.score -= 1 #subtract 1 hp
 
             loot_hit_list = pygame.sprite.spritecollide(self, loot_list, False)       
             for loot in loot_hit_list:
                 self.score += 1
-                print(self.score)
+                loot_list.remove(loot)
 
             block_hit_list = pygame.sprite.spritecollide(self, platform_list, False)
             if self.momentumX > 0:
@@ -86,7 +105,7 @@ class Player(pygame.sprite.Sprite):
 
 
         def gravity(self):
-            self.momentumY += 3 #how fast player falls
+            self.momentumY += 2 #how fast player falls
 
             if self.rect.y > screenY and self.momentumY >= 0:
                 self.momentumY = 0
@@ -143,9 +162,14 @@ class Platform(pygame.sprite.Sprite):
 
        return platform_list #at end of function level1
 
-    def loot1():
+   def loot1():
+       #where loot placement goes 
        loot_list = pygame.sprite.Group()
-       loot = Platform(200, 600, 25, 25)
+       loot = Platform(200, 600, 23, 24,os.path.join('images','loot.png'))
+       loot_list.add(loot)
+       loot = Platform(360, 600, 23, 24,os.path.join('images','loot.png'))
+       loot_list.add(loot)
+       loot = Platform(600, 600, 23, 24,os.path.join('images','loot.png'))
        loot_list.add(loot)
        return loot_list
                        
@@ -192,6 +216,12 @@ fps = 40 #frame rate
 afps = 4 #animation cycles
 clock = pygame.time.Clock()
 pygame.init()
+pygame.font.init() #start freetype
+
+font_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "fonts",
+"amazdoom.ttf")
+font_size = 64
+myfont = pygame.font.Font(font_path, font_size)
 
 main = True
 
@@ -201,7 +231,7 @@ backdropRect = screen.get_rect()
 
 platform_list = Platform.level1() #set stage to level 1
 #crate_list = crate_list()
-loot_list = loot_list()
+loot_list = Platform.loot1()
 
 player = Player() #spawn player on screen 
 player.rect.x = 0
@@ -219,9 +249,9 @@ enemy_list = pygame.sprite.Group() #create enemy group
 enemy_list.add(enemy)  #add enemy to group
 
 #loot code
-loot = Loot(200, 600, 'loot.png') #spawn loot
+'''loot = Loot(200, 600, 'loot.png') #spawn loot
 loot_list = pygame.sprite.Group() #create loot group
-loot_list.add(loot) #add loot to group
+loot_list.add(loot) #add loot to group'''
 
 '''MAIN LOOP''' 
 #code runs many times 
@@ -268,6 +298,10 @@ while main == True:
         player.rect.x = forwardX
         for platform in platform_list:
             platform.rect.x -= scroll
+        for enemy in enemy_list:
+            enemy.rect.x -= scroll
+        for loot in loot_list:
+            loot.rect.x -= scroll
 
     #scroll world backward
     if player.rect.x <= backwardX:
@@ -275,16 +309,23 @@ while main == True:
         player.rect.x = backwardX
         for platform in platform_list:
             platform.rect.x += scroll
+        for enemy in enemy_list:
+            enemy.rect.x += scroll
+        for loot in loot_list:
+            loot.rect.x += scroll
                 
     screen.blit(backdrop, backdropRect)
     platform_list.draw(screen) #draw platforms on screen
     #crate_list.draw(screen) #draw crates on screen
     player.gravity() #check gravity
-    player.update(enemy_list, platform_list, crate_list) #update player position
+    player.update(enemy_list, platform_list, crate_list, loot_list) #update player position
     movingsprites.draw(screen) #draw player
 
     enemy_list.draw(screen) #refresh enemies
     enemy.move() #move enemy sprite
+    loot_list.draw(screen)
+
+    stats(player.score) #draw text
     
     pygame.display.flip()
     clock.tick(fps)
