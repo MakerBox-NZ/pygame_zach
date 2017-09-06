@@ -12,7 +12,7 @@ import pygame.freetype #load fonts
 
 def stats(score):
     #display text,1,color(rgb)
-    text_score = myfont.render("Score: "+str(score), 1, (250,147,248))
+    text_score = myfont.render("Score: "+str(score), 1, (0,5,151))
     screen.blit(text_score, (4, 4))
 
 class Player(pygame.sprite.Sprite):
@@ -130,35 +130,40 @@ class Platform(pygame.sprite.Sprite):
    def level1():
        #create level 1
        platform_list = pygame.sprite.Group()
-       block = Platform(0, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       #the grass
+       block = Platform(0, 680, 240, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(94, 680, 119, 62,os.path.join('images','ground_grass.png'))
+      # block = Platform(94, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       #platform_list.add(block) #after each block
+       block = Platform(188, 680, 240, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(188, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       #block = Platform(282, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       #platform_list.add(block) #after each block
+       block = Platform(350, 680, 240, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(282, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       #block = Platform(420, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(350, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       #block = Platform(480, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(420, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       block = Platform(540, 680, 240, 62,os.path.join('images','ground_grass.png'))
+       #platform_list.add(block) #after each block
+       #block = Platform(600, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(480, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       block = Platform(660, 680, 240, 62,os.path.join('images','ground_grass.png'))
+       #platform_list.add(block) #after each block
+       #block = Platform(720, 680, 119, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(540, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       block = Platform(780, 680, 120, 62,os.path.join('images','ground_grass.png'))
        platform_list.add(block) #after each block
-       block = Platform(600, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       #block = Platform(840, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       #platform_list.add(block) #after each block
+       block = Platform(900, 680, 120, 62,os.path.join('images','ground_grass_rightslope.png'))
        platform_list.add(block) #after each block
-       block = Platform(660, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       #the platforms
+       block = Platform(1130, 530, 152, 300,os.path.join('images','platform_os_1.png'))
        platform_list.add(block) #after each block
-       block = Platform(720, 680, 119, 62,os.path.join('images','ground_grass.png'))
+       block = Platform(1350, 400, 152, 400,os.path.join('images','platform_os_1.png'))
        platform_list.add(block) #after each block
-       block = Platform(780, 680, 119, 62,os.path.join('images','ground_grass.png'))
-       platform_list.add(block) #after each block
-       block = Platform(840, 680, 119, 62,os.path.join('images','ground_grass.png'))
-       platform_list.add(block) #after each block
-       block = Platform(900, 680, 119, 62,os.path.join('images','ground_grass.png'))
-       platform_list.add(block) #after each block
-       
 
        return platform_list #at end of function level1
 
@@ -208,7 +213,7 @@ def crate_list():
 #code runs once
 screenX = 960 #screen width
 screenY = 720 #screen height
-alpha = (0,255,0)
+alpha = (0,0,0)
 black = (1,1,1)
 white = (255, 255, 255)
 
