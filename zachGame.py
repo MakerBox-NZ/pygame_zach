@@ -5,7 +5,7 @@
 import pygame #load pygame keywords
 import sys #let python use your file system
 import os #help python identify your OS
-import pygame.freetype #load fonts
+import pygame.freetype #load fonts6
 
 '''OBJECTS'''
 #put classes & functions here
