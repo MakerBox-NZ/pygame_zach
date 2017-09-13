@@ -40,7 +40,15 @@ class Player(pygame.sprite.Sprite):
             self.momentumX += x
             self.momentumY += y
 
-        def update(self, enemy_list, platform_list, crate_list, loot_list):
+        def update(self, screenY, enemy_list, platform_list, crate_list, loot_list):
+            #throw physics
+            if self.rect.y <screenY: #vertical axis
+                self.rect.x += 15 #how fast it moves forward
+                self.rect.y += 0  #how fast it falls
+            else:
+                self.kill()     #remove fireball
+                self.firing = 0 #free up firing slot
+                
             #update sprite position
             currentX = self.rect.x
             nextX = currentX + self.momentumX
@@ -49,14 +57,6 @@ class Player(pygame.sprite.Sprite):
             currentY = self.rect.y
             nextY = currentY + self.momentumY
             self.rect.y = nextY
-
-            #gravity
-            if self.collide_delta < 6 and self.jump_delta < 6:
-                self.jump_delta = 6*2
-                self.momentumY -=29 #how high to jump
-
-                self.collide_delta +=6
-                self.jump_delta += 6
 
                 #colisions
             enemy_hit_list = pygame.sprite.spritecollide(self, enemy_list, False)       
@@ -95,10 +95,13 @@ class Player(pygame.sprite.Sprite):
                      self.momentumY = 0
                      self.collide_delta = 0 #stop jumping
 
-            
-                     
+            #gravity
+            if self.collide_delta < 6 and self.jump_delta < 6 :
+                self.jump_delta = 6*6
+                self.momentumY -=29 #how high to jump
 
-          
+                self.collide_delta +=6
+                self.jump_delta += 6
 
         def jump (self, platform_list):
              self.jump_delta = 0
@@ -208,6 +211,18 @@ def crate_list():
        crate_list.add(crate) #after each block
 
        return crate_list
+
+class Throwable():
+    #spawn a throwable object
+    def __init__(self,x,y,img,throw):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(os.path.join('images',img))
+        self.image.convert_alpha()
+        self.image.set_colorkey(alpha)
+        self.rect   = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.firing = throw
             
 '''SETUP'''
 #code runs once
@@ -243,6 +258,8 @@ player.rect.x = 0
 player.rect.y = 300
 movingsprites = pygame.sprite.Group()
 movingsprites.add(player)
+fire = Throwable(player.rect.x,player.rect.y,'fire.png',0)
+firepower = pygame.sprite.Group()
 movesteps = 10 #how fast to move
 
 forwardX = 400 #when to scroll
@@ -281,6 +298,10 @@ while main == True:
                 player.control(-movesteps, 0)
             if event.key == ord('w') or event.key == pygame.K_UP:
                 print('jump stop')
+            if event.key == ord('z') or event.key == pygame.K_LSHIFT:
+                if not fire.firing:
+                    fire = Throwable(player.rect.x,player.rect.y,'fire.png',1)
+                    firepower.add(fire)
             if event.key == ord('s') or event.key == pygame.K_DOWN:
                 print('duck stop')
         
@@ -327,6 +348,11 @@ while main == True:
     movingsprites.draw(screen) #draw player
 
     enemy_list.draw(screen) #refresh enemies
+
+    if fire.firing:
+        fire.update(screenY)
+        firepower.draw(screen)
+        
     enemy.move() #move enemy sprite
     loot_list.draw(screen)
 
