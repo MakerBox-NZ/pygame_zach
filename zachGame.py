@@ -35,19 +35,13 @@ class Player(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.image.convert_alpha() #optimise for alpha
             self.image.set_colorkey(alpha) #set alpha
+            
         def control(self, x, y):
             #control player movement
             self.momentumX += x
             self.momentumY += y
 
-        def update(self, screenY, enemy_list, platform_list, crate_list, loot_list):
-            #throw physics
-            if self.rect.y <screenY: #vertical axis
-                self.rect.x += 15 #how fast it moves forward
-                self.rect.y += 0  #how fast it falls
-            else:
-                self.kill()     #remove fireball
-                self.firing = 0 #free up firing slot
+        def update(self, enemy_list, platform_list, crate_list, loot_list):
                 
             #update sprite position
             currentX = self.rect.x
@@ -183,6 +177,12 @@ class Platform(pygame.sprite.Sprite):
                        
 class Enemy(pygame.sprite.Sprite):
     #spawn an enemy
+    def update(self, firepower, enemy_list):
+        #detect firepower collision
+        fire_hit_list = pygame.sprite.spritecollide(self, firepower, False)
+        for fire in fire_hit_list:
+            enemy_list.remove(self)
+            
     def __init__(self,x,y,img): 
        pygame.sprite.Sprite.__init__(self)
        self.image = pygame.image.load(os.path.join('images', img))
@@ -192,6 +192,7 @@ class Enemy(pygame.sprite.Sprite):
        self.rect.x = x
        self.rect.y = y
        self.counter = 0 #counter variable
+       
     def move(self):
         #enemy movement
         if self.counter >= 0 and self.counter <= 30:
@@ -200,7 +201,6 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.x -= 2
         else:
             self.counter = 0
-            print('reset')
 
         self.counter += 1
 
@@ -212,7 +212,7 @@ def crate_list():
 
        return crate_list
 
-class Throwable():
+class Throwable(pygame.sprite.Sprite):
     #spawn a throwable object
     def __init__(self,x,y,img,throw):
         pygame.sprite.Sprite.__init__(self)
@@ -221,8 +221,17 @@ class Throwable():
         self.image.set_colorkey(alpha)
         self.rect   = self.image.get_rect()
         self.rect.x = x
-        self.rect.y = y
+        self.rect.y = y + 115
         self.firing = throw
+
+    def update(self, screenX):
+      #throw physics
+        if self.rect.x < screenX: #vertical axis
+            self.rect.x += 15 #how fast it moves forward
+            self.rect.y += 0  #how fast it falls
+        else:
+            self.kill()     #remove fireball
+            self.firing = 0 #free up firing slot
             
 '''SETUP'''
 #code runs once
@@ -350,8 +359,9 @@ while main == True:
     enemy_list.draw(screen) #refresh enemies
 
     if fire.firing:
-        fire.update(screenY)
+        fire.update(screenX)
         firepower.draw(screen)
+        enemy_list.update(firepower, enemy_list) 
         
     enemy.move() #move enemy sprite
     loot_list.draw(screen)
